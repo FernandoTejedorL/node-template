@@ -49,7 +49,9 @@ app.get('/read', (req, res) => {
     } else {
       const jsonData = JSON.parse(data);
       const userFound = jsonData.find((item) => item.userId === toFind.userId);
-      res.send(`El nombre es ${userFound.name} y el mail ${userFound.email}`);
+      res.send(
+        `User's name is ${userFound.name} and email address ${userFound.email}`
+      );
     }
   });
 });
