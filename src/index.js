@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const port = 3000;
 app.use(express.json());
+const pathFile = path.resolve(__dirname, '../data/users.json');
 
 /*
 GET -> Obtiene info
@@ -14,61 +15,19 @@ DELETE -> Borra info
 CRUD -> Create, Read, Update & Delete
 */
 
-const pathFile = path.resolve(__dirname, '../data/users.json');
+// EJERCICIO: Realizar cada acción pasando solo el id en el body
 
-//error first
-
-app.get('/read', (req, res) => {
-  fs.readFile(pathFile, (error, data) => {
-    if (error) {
-      res.send('Error reading file');
-    } else {
-      const jsonData = JSON.parse(data);
-      res.send(jsonData);
-    }
-  });
-});
-
-app.get('/write', (req, res) => {
-  const newInfo = req.body;
-
-  fs.readFile(pathFile, (error, data) => {
-    if (error) {
-      res.send('Error reading file');
-    } else {
-      const jsonData = JSON.parse(data);
-      const newData = [...jsonData, newInfo];
-      fs.writeFile(pathFile, JSON.stringify(newData), (error) => {
-        if (error) {
-          res.send('Error saving info');
-        }
-
-        res.send('Data saved OK');
-      });
-    }
-  });
-});
+// CREATE (post) -> Crear un usuario
 
 app.post('/create', (req, res) => {
-  console.log(req.body);
-  fs.writeFile(pathFile, JSON.stringify(req.body), (error) => {
-    if (error) {
-      res.send('Error saving info');
-    }
-
-    res.send('Data saved OK');
-  });
-});
-
-app.patch('/update', (req, res) => {
-  const newInfo = { number: 34 };
+  const toCreate = req.body;
 
   fs.readFile(pathFile, (error, data) => {
     if (error) {
       res.send('Error reading file');
     } else {
       const jsonData = JSON.parse(data);
-      const newData = [...jsonData, newInfo];
+      const newData = [...jsonData, toCreate];
       fs.writeFile(pathFile, JSON.stringify(newData), (error) => {
         if (error) {
           res.send('Error saving info');
@@ -80,9 +39,67 @@ app.patch('/update', (req, res) => {
   });
 });
 
+// READ (get) -> Obtener info de usuarios
+
+app.get('/read', (req, res) => {
+  const toFind = req.body;
+  fs.readFile(pathFile, (error, data) => {
+    if (error) {
+      res.send('Error reading file');
+    } else {
+      const jsonData = JSON.parse(data);
+      const userFound = jsonData.find((item) => item.userId === toFind.userId);
+      res.send(`El nombre es ${userFound.name} y el mail ${userFound.email}`);
+    }
+  });
+});
+
+// UPDATE (patch) -> Actualizar info de usuarios
+
+app.patch('/update', (req, res) => {
+  const toUpdate = req.body;
+  fs.readFile(pathFile, (error, data) => {
+    if (error) {
+      res.send('Error reading file');
+    } else {
+      const jsonData = JSON.parse(data);
+      const userFound = jsonData.find(
+        (item) => item.userId === toUpdate.userId
+      );
+      userFound.name = toUpdate.name;
+      userFound.email = toUpdate.email;
+      fs.writeFile(pathFile, JSON.stringify(jsonData), (error) => {
+        if (error) {
+          res.send('Error saving info');
+        }
+
+        res.send('Data saved OK');
+      });
+    }
+  });
+});
+
+// DELETE (delete) -> Eliminar usuarios
+
 app.delete('/delete', (req, res) => {
-  console.log(req.body);
-  res.end;
+  const toDelete = req.body;
+  fs.readFile(pathFile, (error, data) => {
+    if (error) {
+      res.send('Error reading file');
+    } else {
+      const jsonData = JSON.parse(data);
+      const newData = jsonData.filter(
+        (item) => item.userId !== toDelete.userId
+      );
+      fs.writeFile(pathFile, JSON.stringify(newData), (error) => {
+        if (error) {
+          res.send('Error saving info');
+        }
+
+        res.send('Data saved OK');
+      });
+    }
+  });
 });
 
 app.listen(port, () => {
