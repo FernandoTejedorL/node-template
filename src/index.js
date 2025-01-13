@@ -16,8 +16,9 @@ CRUD -> Create, Read, Update & Delete
 
 const pathFile = path.resolve(__dirname, '../data/users.json');
 
+//error first
+
 app.get('/read', (req, res) => {
-  //error first
   fs.readFile(pathFile, (error, data) => {
     if (error) {
       res.send('Error reading file');
@@ -29,7 +30,7 @@ app.get('/read', (req, res) => {
 });
 
 app.get('/write', (req, res) => {
-  const newInfo = { number: 34 };
+  const newInfo = req.body;
 
   fs.readFile(pathFile, (error, data) => {
     if (error) {
@@ -60,8 +61,23 @@ app.post('/create', (req, res) => {
 });
 
 app.patch('/update', (req, res) => {
-  console.log(req.body);
-  res.end;
+  const newInfo = { number: 34 };
+
+  fs.readFile(pathFile, (error, data) => {
+    if (error) {
+      res.send('Error reading file');
+    } else {
+      const jsonData = JSON.parse(data);
+      const newData = [...jsonData, newInfo];
+      fs.writeFile(pathFile, JSON.stringify(newData), (error) => {
+        if (error) {
+          res.send('Error saving info');
+        }
+
+        res.send('Data saved OK');
+      });
+    }
+  });
 });
 
 app.delete('/delete', (req, res) => {
