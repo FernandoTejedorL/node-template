@@ -33,7 +33,7 @@ app.post('/create', (req, res) => {
           res.send('Error saving info');
         }
 
-        res.send('Data saved OK');
+        res.send(`Data saved OK and user ${toCreate.name} has been created`);
       });
     }
   });
@@ -77,7 +77,7 @@ app.patch('/update', (req, res) => {
           res.send('Error saving info');
         }
 
-        res.send('Data saved OK');
+        res.send(`Data saved OK and user ${userFound.name} has been updated`);
       });
     }
   });
@@ -100,7 +100,7 @@ app.delete('/delete', (req, res) => {
           res.send('Error saving info');
         }
 
-        res.send('Data saved OK');
+        res.send(`Data saved OK and the user has been deleted`);
       });
     }
   });
