@@ -66,8 +66,12 @@ app.patch('/update', (req, res) => {
       const userFound = jsonData.find(
         (item) => item.userId === toUpdate.userId
       );
-      userFound.name = toUpdate.name;
-      userFound.email = toUpdate.email;
+      if (toUpdate.name) {
+        userFound.name = toUpdate.name;
+      }
+      if (toUpdate.email) {
+        userFound.email = toUpdate.email;
+      }
       fs.writeFile(pathFile, JSON.stringify(jsonData), (error) => {
         if (error) {
           res.send('Error saving info');
