@@ -42,16 +42,12 @@ app.post('/create', (req, res) => {
 // READ (get) -> Obtener info de usuarios
 
 app.get('/read', (req, res) => {
-  const toFind = req.body;
   fs.readFile(pathFile, (error, data) => {
     if (error) {
       res.send('Error reading file');
     } else {
       const jsonData = JSON.parse(data);
-      const userFound = jsonData.find((item) => item.userId === toFind.userId);
-      res.send(
-        `User's name is ${userFound.name} and email address ${userFound.email}`
-      );
+      res.send(jsonData);
     }
   });
 });
